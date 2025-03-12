@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 10px;
+      }
+      .btn {
+        height: 40px;
+        padding: 0 20px;
+        margin-bottom: 20px;
+      }
+
+      .traffic-light {
+        border: 1px solid #333;
+        display: inline-block;
+      }
+      .light {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 10px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="traffic-light">
+      <div class="light red"></div>
+      <div class="light green"></div>
+      <div class="light yellow"></div>
+    </div>
+
+    <script>
+      function renderLight(color) {
+        const lights = document.querySelectorAll(".light");
+        lights.forEach(
+          (light) => (light.style.backgroundColor = "transparent")
+        );
+        document.querySelector(`.${color}`).style.backgroundColor = color;
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function renderLightWidthDelay(color, duration) {
+        renderLight(color);
+        await sleep(duration);
+      }
+
+      class LightRunner {
+        constructor() {
+          this.tasks = [];
+          this.curIndex = 0;
+        }
+
+        add(task) {
+          this.tasks.push(task);
+        }
+
+        async run() {
+          while (this.tasks.length) {
+            const task = this.tasks[this.curIndex];
+            await task();
+            if (this.curIndex >= this.tasks.length - 1) {
+              this.curIndex = 0;
+            } else {
+              this.curIndex++;
+            }
+          }
+        }
+      }
+
+      const lightRunner = new LightRunner();
+      
+      lightRunner.add(() => renderLightWidthDelay("red", 1000));
+      lightRunner.add(() => renderLightWidthDelay("green", 1000));
+      lightRunner.add(() => renderLightWidthDelay("yellow", 1000));
+      lightRunner.run();
+    </script>
+  </body>
+</html>
