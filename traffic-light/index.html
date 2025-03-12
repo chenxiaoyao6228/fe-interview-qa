@@ -49,9 +49,31 @@
         await sleep(duration);
       }
 
-      // implement the lightRunner
-      
+      const lightRunner = (() => {
+        const tasks = [];
+        let curIndex = 0;
 
+        const add = (task) => {
+          tasks.push(task);
+        };
+
+        const run = async () => {
+          while (tasks.length) {
+            const task = tasks[curIndex];
+            await task();
+            if (curIndex >= tasks.length - 1) {
+              curIndex = 0;
+            } else {
+              curIndex++;
+            }
+          }
+        };
+
+        return {
+          add,
+          run,
+        };
+      })();
 
       lightRunner.add(() => renderLightWidthDelay("red", 1000));
       lightRunner.add(() => renderLightWidthDelay("green", 1000));
